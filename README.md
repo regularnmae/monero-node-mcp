@@ -112,18 +112,19 @@ tool set.
 
 ## Deploying
 
-`deploy/` owns the quadlet unit and `install.sh`. On the target host:
+The runtime for this server — its quadlet unit and env wiring — is owned by the
+separate [`stack`](https://github.com/regularnmae/stack) repo, not here:
 
 ```sh
-cd ~/build && git clone <url> monero-node-mcp && cd monero-node-mcp
-./deploy/install.sh
-./deploy.sh
-sudo firewall-cmd --permanent --add-port=8102/tcp && sudo firewall-cmd --reload
+cd ~/build/stack
+./deploy.sh --only monero-node-mcp   # build the image, restart, wait for "(healthy)"
+./deploy.sh                          # the whole stack
 ```
 
-`install.sh` is idempotent. It writes the bearer token to
+`stack/deploy.sh` opens `8102/tcp` in firewalld on a fresh host.
+`stack/deploy/install.sh` is idempotent. It writes the bearer token to
 `~/.config/monero-node-mcp/token.env` (mode 600), reusing the running
 container's token, and seeds a usually-empty `upstream.env` for optional RPC
-credentials. The unit reads both via `EnvironmentFile=`. No secret is
-committed — only `deploy/*.example` are. Roll back with
-`git checkout <older-sha> && ./deploy.sh`.
+credentials. The unit reads both via `EnvironmentFile=`. The env-file shapes
+are documented in `stack/deploy/examples/monero-node-mcp/`. No secret is
+committed.

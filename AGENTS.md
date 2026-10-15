@@ -3,7 +3,9 @@
 Flat three-module Python MCP server (not a package). `server.py` is the app —
 config, tools, auth middleware; `rpc.py` is its **stdlib-only** Monero daemon
 client; `healthcheck.py` is the container healthcheck probe. Shipped as a
-rootless podman/quadlet container, unit under `deploy/`. Toolchain is uv only.
+rootless podman/quadlet container; the runtime — its quadlet unit, the
+`npm-network` it shares and the env wiring — is owned by the `stack` repo
+(https://github.com/regularnmae/stack), not here. Toolchain is uv only.
 `mcp` is the 2.x line: the app object is `MCPServer` (the v2 rename of
 `FastMCP`).
 
@@ -21,8 +23,12 @@ uv run pytest -q               # tests, no network
 uv run python scripts/smoke.py # boots the real app on a free loopback port
 uv add <pkg>                   # edits pyproject.toml AND re-locks
 podman build -t localhost/monero-node-mcp:latest .
-./deploy.sh                    # builds, restarts monero-node-mcp.service, waits for "(healthy)"
 ```
+
+Deployment is owned by the `stack` repo: `cd ~/build/stack && ./deploy.sh --only monero-node-mcp`
+rebuilds the image, restarts `monero-node-mcp.service` and waits for
+"(healthy)"; `./deploy.sh` deploys the whole stack. The unit and `npm-network`
+live there, not here.
 
 ## Facts that are easy to get wrong
 
@@ -53,9 +59,9 @@ podman build -t localhost/monero-node-mcp:latest .
 - The image declares no `HEALTHCHECK`; the quadlet supplies
   `HealthCmd=python /app/healthcheck.py` plus `MONERO_MCP_TOKEN`.
 - Publishing: `PublishPort=8102:8000`. Open `8102/tcp` in firewalld.
-- `deploy/install.sh` writes `~/.config/monero-node-mcp/{token,upstream}.env`
-  (mode 600) and symlinks the unit; `npm-network.network` is linked only if no
-  other repo already provided it.
+- `stack/deploy/install.sh` writes `~/.config/monero-node-mcp/{token,upstream}.env`
+  (mode 600) and symlinks the unit. The env-file shapes are documented in
+  `stack/deploy/examples/monero-node-mcp/`.
 
 ## Testing quirks
 

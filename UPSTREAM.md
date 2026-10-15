@@ -1,17 +1,15 @@
-# deploy/ — what this repo owns, and what it depends on
+# What this repo owns, and what it depends on
 
-This repo owns exactly **one** unit — `monero-node-mcp.container` — plus a
-shared network file:
+This repo owns only the **application** — its Python code, tests, CI and
+`Containerfile`. It ships no unit and no env file. The runtime is owned by
+[`stack`](https://github.com/regularnmae/stack), which holds every quadlet unit
+and the `npm-network.network` the MCP servers share, and renders the
+`~/.config/<name>/*.env` files. See `stack/deploy/` and
+`stack/deploy/examples/monero-node-mcp/`.
 
-- `monero-node-mcp.container` — the MCP server, `PublishPort=8102:8000`.
-- `npm-network.network` — the podman network it shares with the daemons.
-  `install.sh` links it **only if no other repo has already provided it**, so
-  deploying this repo cannot fight another one over the same file.
-
-It does **not** own `monerod`. The node's unit is owned by
-[`crypto-nodes`](https://github.com/regularnmae/crypto-nodes), together with the
-rest of the crypto node stack — one file, one owner. See that repo to rebuild
-the node.
+It does **not** own `monerod` either. The node's unit is owned by `stack`,
+together with the rest of the crypto node stack — one file, one owner. See that
+repo to rebuild the node.
 
 ## Upstream contract
 
@@ -43,9 +41,9 @@ connection handling `monero-wallet-mcp` has.
 ## Deploy
 
 ```sh
-./deploy/install.sh     # token.env + (usually empty) upstream.env, symlink the unit, reload
-./deploy.sh             # install + build + restart + wait healthy
-sudo firewall-cmd --permanent --add-port=8102/tcp && sudo firewall-cmd --reload
+cd ~/build/stack
+./deploy.sh --only monero-node-mcp   # build the image, restart, wait for "(healthy)"
 ```
 
-Secrets land in `~/.config/monero-node-mcp/`.
+Secrets land in `~/.config/monero-node-mcp/`; `./deploy.sh` opens `8102/tcp`
+in firewalld.
