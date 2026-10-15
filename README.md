@@ -113,7 +113,10 @@ tool set.
 ## Deploying
 
 The runtime for this server — its quadlet unit and env wiring — is owned by the
-separate [`stack`](https://github.com/regularnmae/stack) repo, not here:
+separate [`stack`](https://github.com/regularnmae/stack) repo, not here. `stack`
+supplies the bearer token, seeds the usually-empty `upstream.env` for optional
+RPC credentials, publishes the host port and provides the healthcheck; see that
+repo for the unit and env-file locations.
 
 ```sh
 cd ~/build/stack
@@ -121,10 +124,5 @@ cd ~/build/stack
 ./deploy.sh                          # the whole stack
 ```
 
-`stack/deploy.sh` opens `8102/tcp` in firewalld on a fresh host.
-`stack/deploy/install.sh` is idempotent. It writes the bearer token to
-`$DATA_DIR/config/monero-node-mcp/token.env` (mode 600), reusing the running
-container's token, and seeds a usually-empty `upstream.env` for optional RPC
-credentials. The unit reads both via `EnvironmentFile=`. The env-file shapes
-are documented in `stack/deploy/examples/monero-node-mcp/`. No secret is
-committed.
+No secret is committed here; the env-file shape is shown in
+`stack/deploy/examples/monero-node-mcp/`.

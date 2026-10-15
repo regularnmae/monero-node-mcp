@@ -3,9 +3,9 @@
 This repo owns only the **application** — its Python code, tests, CI and
 `Containerfile`. It ships no unit and no env file. The runtime is owned by
 [`stack`](https://github.com/regularnmae/stack), which holds every quadlet unit
-and the `npm-network.network` the MCP servers share, and renders the
-`$DATA_DIR/config/<name>/*.env` files. See `stack/deploy/` and
-`stack/deploy/examples/monero-node-mcp/`.
+and the `npm-network.network` the MCP servers share, writes this server's env
+file(s), and publishes the host port. See that repo for the unit, the env-file
+locations and `stack/deploy/examples/monero-node-mcp/`.
 
 It does **not** own `monerod` either. The node's unit is owned by `stack`,
 together with the rest of the crypto node stack — one file, one owner. See that
@@ -45,5 +45,4 @@ cd ~/build/stack
 ./deploy.sh --only monero-node-mcp   # build the image, restart, wait for "(healthy)"
 ```
 
-Secrets land in `$DATA_DIR/config/monero-node-mcp/`; `./deploy.sh` opens `8102/tcp`
-in firewalld.
+See that repo for the env-file location and the host port it publishes.

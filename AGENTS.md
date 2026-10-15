@@ -56,12 +56,12 @@ live there, not here.
   `Annotated[int, Field(ge=0)] | None` and renders as an `anyOf`.
 - A new top-level module must go in the `Containerfile`'s `COPY` lines **and**
   pyright's `include`.
-- The image declares no `HEALTHCHECK`; the quadlet supplies
-  `HealthCmd=python /app/healthcheck.py` plus `MONERO_MCP_TOKEN`.
-- Publishing: `PublishPort=8102:8000`. Open `8102/tcp` in firewalld.
-- `stack/deploy/install.sh` writes `$DATA_DIR/config/monero-node-mcp/{token,upstream}.env`
-  (mode 600) and renders the unit. The env-file shapes are documented in
-  `stack/deploy/examples/monero-node-mcp/`.
+- The image declares no `HEALTHCHECK`; the `stack` unit supplies
+  `HealthCmd=python /app/healthcheck.py`. `stack` also writes this server's env
+  file(s) (shape: `stack/deploy/examples/monero-node-mcp/`); see that repo for
+  the unit, the env-file location and the host port.
+- The server binds `0.0.0.0:8000` and serves `/mcp` (token-gated); `/health` is
+  open and answers exactly `{"status":"ok"}`.
 
 ## Testing quirks
 
