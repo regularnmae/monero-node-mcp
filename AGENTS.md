@@ -59,8 +59,8 @@ live there, not here.
 - The image declares no `HEALTHCHECK`; the quadlet supplies
   `HealthCmd=python /app/healthcheck.py` plus `MONERO_MCP_TOKEN`.
 - Publishing: `PublishPort=8102:8000`. Open `8102/tcp` in firewalld.
-- `stack/deploy/install.sh` writes `~/.config/monero-node-mcp/{token,upstream}.env`
-  (mode 600) and symlinks the unit. The env-file shapes are documented in
+- `stack/deploy/install.sh` writes `$DATA_DIR/config/monero-node-mcp/{token,upstream}.env`
+  (mode 600) and renders the unit. The env-file shapes are documented in
   `stack/deploy/examples/monero-node-mcp/`.
 
 ## Testing quirks

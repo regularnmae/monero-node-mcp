@@ -123,7 +123,7 @@ cd ~/build/stack
 
 `stack/deploy.sh` opens `8102/tcp` in firewalld on a fresh host.
 `stack/deploy/install.sh` is idempotent. It writes the bearer token to
-`~/.config/monero-node-mcp/token.env` (mode 600), reusing the running
+`$DATA_DIR/config/monero-node-mcp/token.env` (mode 600), reusing the running
 container's token, and seeds a usually-empty `upstream.env` for optional RPC
 credentials. The unit reads both via `EnvironmentFile=`. The env-file shapes
 are documented in `stack/deploy/examples/monero-node-mcp/`. No secret is
